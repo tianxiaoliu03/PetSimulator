@@ -1,5 +1,4 @@
-import time
-
+# Pet class
 class Pet:
     def __init__(self, name):
         self.name = name
@@ -12,21 +11,18 @@ class Pet:
         if self.coins >= 5:
             self.hunger -= 10
             self.coins -= 5
-            print(self.name + " is fed. Hunger decreased by 10.")
         else:
             print("Not enough coins to buy food.")
 
     def play(self):
         if self.happiness < 90:
             self.happiness += 10
-            print(self.name + " is playing. Happiness increased by 10.")
         else:
             print(self.name + " is already very happy.")
 
     def sleep(self):
         if self.sleepiness < 90:
             self.sleepiness += 10
-            print(self.name + " is sleeping. Sleepiness decreased by 10.")
         else:
             print(self.name + " is already well-rested.")
 
@@ -39,4 +35,3 @@ class Pet:
 
     def earn_coins(self):
         self.coins += 10
-        print("You earned 10 coins.")
