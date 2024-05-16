@@ -1,7 +1,12 @@
-import pygame
-import time
-import pet
 
+import pygame
+import sys
+from pet import Pet
+
+pygame.init()
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial', 20)
+pygame.display.set_caption("Pet simulator!")
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -9,141 +14,111 @@ BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 # Initialize Pygame
 pygame.init()
-
-# Set up the screen
-SCREEN_WIDTH = 400
-SCREEN_HEIGHT = 300
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial', 20)
 pygame.display.set_caption("Virtual Pet")
 
+# Set up the screen
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 # Load the cat image
-cat_image = pygame.image.load("cat.jpg")  # Assuming "cat.png" is the image file name
+cat_image_path = "cat.jpg"
 
-# Scale the cat image
-cat_image = pygame.transform.scale(cat_image, (100, 100))  # Adjust size as needed
+# Create the pet
+pet_name = "Fluffy"
+pet = Pet(pet_name, cat_image_path)
 
+# Load the background image
+bg = pygame.image.load("background.jpg")
 
-# Pet class
-class Pet:
-    def __init__(self, name):
-        self.name = name
-        self.happiness = 50
-        self.hunger = 50
-        self.sleepiness = 50
-        self.coins = 0
+# Health bar constants
+BAR_WIDTH = 100
+BAR_HEIGHT = 20
 
-    def feed(self):
-        if self.coins >= 5:
-            self.hunger -= 10
-            self.coins -= 5
-        else:
-            print("Not enough coins to buy food.")
+# Define buttons and food rect
+buttons = {
+    "feed": pygame.Rect(650, 50, 100, 50),
+    "play": pygame.Rect(650, 110, 100, 50),
+    "sleep": pygame.Rect(650, 170, 100, 50),
+    "earn": pygame.Rect(650, 230, 100, 50),
+    "status": pygame.Rect(650, 290, 100, 50)
+}
 
-    def play(self):
-        if self.happiness < 90:
-            self.happiness += 10
-        else:
-            print(self.name + " is already very happy.")
+food_image = pygame.image.load("food.jpg")
+food_image = pygame.transform.scale(food_image, (50, 50))
+food_rect = food_image.get_rect(topleft=(600, 400))
 
-    def sleep(self):
-        if self.sleepiness < 90:
-            self.sleepiness += 10
-        else:
-            print(self.name + " is already well-rested.")
+# Initial food dragging state
+dragging_food = False
 
-    def check_status(self):
-        print("Name:", self.name)
-        print("Happiness:", self.happiness)
-        print("Hunger:", self.hunger)
-        print("Sleepiness:", self.sleepiness)
-        print("Coins:", self.coins)
+# Main loop
+run = True
+clock = pygame.time.Clock()
 
-    def earn_coins(self):
-        self.coins += 10
-
-
-# Main program
-def main():
-    pet_name = input("Enter your pet's name: ")
-    pet = Pet(pet_name)
-
-    clock = pygame.time.Clock()
-    running = True
-
-    while running:
-        screen.fill(WHITE)
-
-        # Blit the cat image onto the screen
-        screen.blit(cat_image, (150, 50))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-            # Handle button clicks
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-
-                # Feed button
-                if 50 <= mouse_pos[0] <= 150 and 50 <= mouse_pos[1] <= 100:
+while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  # Left mouse button
+                if food_rect.collidepoint(event.pos):
+                    dragging_food = True
+                for name, rect in buttons.items():
+                    if rect.collidepoint(event.pos):
+                        if name == "feed":
+                            pet.feed()
+                        elif name == "play":
+                            pet.play()
+                        elif name == "sleep":
+                            pet.sleep()
+                        elif name == "earn":
+                            pet.earn_coins()
+                        elif name == "status":
+                            pet.check_status()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:  # Left mouse button
+                dragging_food = False
+                if pet.rect.colliderect(food_rect):
                     pet.feed()
+        elif event.type == pygame.MOUSEMOTION:
+            if dragging_food:
+                food_rect.move_ip(event.rel)
 
-                # Play button
-                if 50 <= mouse_pos[0] <= 150 and 120 <= mouse_pos[1] <= 170:
-                    pet.play()
+    screen.blit(bg, (0, 0))  # Draw the background
 
-                # Sleep button
-                if 50 <= mouse_pos[0] <= 150 and 190 <= mouse_pos[1] <= 240:
-                    pet.sleep()
+    # Draw the pet
+    screen.blit(pet.image, pet.rect)
 
-                # Earn coins button
-                if 200 <= mouse_pos[0] <= 300 and 120 <= mouse_pos[1] <= 170:
-                    pet.earn_coins()
+    # Draw the food
+    screen.blit(food_image, food_rect)
 
-                # Check status button
-                if 200 <= mouse_pos[0] <= 300 and 190 <= mouse_pos[1] <= 240:
-                    pet.check_status()
+    # Draw buttons
+    for name, rect in buttons.items():
+        pygame.draw.rect(screen, GRAY, rect)
+        text = my_font.render(name.capitalize(), True, BLACK)
+        text_rect = text.get_rect(center=rect.center)
+        screen.blit(text, text_rect)
 
-        # Draw buttons
-        pygame.draw.rect(screen, GRAY, (50, 50, 100, 50))  # Feed button
-        pygame.draw.rect(screen, GRAY, (50, 120, 100, 50))  # Play button
-        pygame.draw.rect(screen, GRAY, (50, 190, 100, 50))  # Sleep button
-        pygame.draw.rect(screen, GRAY, (200, 120, 100, 50))  # Earn coins button
-        pygame.draw.rect(screen, GRAY, (200, 190, 100, 50))  # Check status button
+    # Draw health bars
+    pygame.draw.rect(screen, RED, (10, 10, BAR_WIDTH, BAR_HEIGHT))  # Hunger bar background
+    pygame.draw.rect(screen, GREEN, (10, 10, pet.hunger, BAR_HEIGHT))  # Hunger bar
+    pygame.draw.rect(screen, RED, (10, 40, BAR_WIDTH, BAR_HEIGHT))  # Sleepiness bar background
+    pygame.draw.rect(screen, GREEN, (10, 40, pet.sleepiness, BAR_HEIGHT))  # Sleepiness bar
+    pygame.draw.rect(screen, RED, (10, 70, BAR_WIDTH, BAR_HEIGHT))  # Happiness bar background
+    pygame.draw.rect(screen, GREEN, (10, 70, pet.happiness, BAR_HEIGHT))  # Happiness bar
 
-        # Display text on buttons
-        font = pygame.font.Font(None, 36)
-        text_feed = font.render("Feed", True, BLACK)
-        text_play = font.render("Play", True, BLACK)
-        text_sleep = font.render("Sleep", True, BLACK)
-        text_earn = font.render("Earn Coins", True, BLACK)
-        text_status = font.render("Check Status", True, BLACK)
-        screen.blit(text_feed, (65, 65))
-        screen.blit(text_play, (65, 135))
-        screen.blit(text_sleep, (65, 205))
-        screen.blit(text_earn, (210, 135))
-        screen.blit(text_status, (210, 205))
+    coins_text = my_font.render(f"Coins: {pet.coins}", True, BLACK)
+    screen.blit(coins_text, (10, 100))
 
-        # Update the screen
-        pygame.display.flip()
+    pygame.display.flip()
+    clock.tick(60)
 
-        # Decrease bars every iteration
-        pet.hunger += 5
-        pet.sleepiness += 5
+pygame.quit()
+sys.exit()
 
-        # Check if pet is hungry or sleepy
-        if pet.hunger >= 100:
-            print(pet.name + " is hungry! Feed it.")
-        if pet.sleepiness >= 100:
-            print(pet.name + " is sleepy! Let it sleep.")
-
-        clock.tick(60)
-
-    pygame.quit()
-
-
-if __name__ == "__main__":
-    main()
