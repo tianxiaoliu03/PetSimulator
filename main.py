@@ -28,14 +28,15 @@ SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Load the cat image
-cat_image_path = "cat.jpg"
+cat_image_path = "cat.png"  # Ensure this is a PNG with transparency
 
 # Create the pet
 pet_name = "Fluffy"
 pet = Pet(pet_name, cat_image_path)
 
-# Load the background image
-bg = pygame.image.load("background.jpg")
+# Load and scale the background image
+bg = pygame.image.load("background.jpg").convert()
+bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Health bar constants
 BAR_WIDTH = 100
@@ -50,7 +51,8 @@ buttons = {
     "status": pygame.Rect(650, 290, 100, 50)
 }
 
-food_image = pygame.image.load("food.jpg")
+# Load the food image with transparency
+food_image = pygame.image.load("food.jpg").convert_alpha()  # Ensure this is a PNG with transparency
 food_image = pygame.transform.scale(food_image, (50, 50))
 food_rect = food_image.get_rect(topleft=(600, 400))
 
@@ -100,8 +102,20 @@ while run:
 
     # Draw buttons
     for name, rect in buttons.items():
-        pygame.draw.rect(screen, GRAY, rect)
-        text = my_font.render(name.capitalize(), True, BLACK)
+        pygame.draw.rect(screen, GRAY, rect, border_radius=10)
+        emoji = ""
+        if name == "feed":
+            emoji = "🍴"
+        elif name == "play":
+            emoji = "🎮"
+        elif name == "sleep":
+            emoji = "🛏️"
+        elif name == "earn":
+            emoji = "💰"
+        elif name == "status":
+            emoji = "📊"
+
+        text = my_font.render(emoji + " " + name.capitalize(), True, BLACK)
         text_rect = text.get_rect(center=rect.center)
         screen.blit(text, text_rect)
 
