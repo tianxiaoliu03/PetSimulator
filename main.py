@@ -22,6 +22,21 @@ pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 20)
 pygame.display.set_caption("Virtual Pet")
 
+# Add the following at the start of your main.py file
+intro_screen = True
+
+# Define the play button for the intro screen
+play_button = pygame.Rect(350, 450, 100, 50)
+
+# Define instructions text
+instructions = [
+    "Welcome to the Pet Simulator!",
+    "Take care of your pet by feeding, playing, and letting it sleep.",
+    "Earn coins to buy food and water.",
+    "Use the buttons to interact with your pet.",
+    "Press 'Play' to start the game!"
+]
+
 # Set up the screen
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -76,12 +91,8 @@ status_text = ""
 def draw_health_bar(screen, x, y, value, label):
     """Draw a health bar with a dynamic color gradient."""
     # Determine the color based on the value
-    if value > 50:
-        color = GREEN
-    elif value > 20:
-        color = YELLOW
-    else:
-        color = RED
+
+    color = GREEN
 
     pygame.draw.rect(screen, RED, (x, y, BAR_WIDTH, BAR_HEIGHT))  # Background
     pygame.draw.rect(screen, color, (x, y, value, BAR_HEIGHT))  # Value bar
@@ -142,20 +153,8 @@ while run:
 
     # Draw buttons
     for name, rect in buttons.items():
-        pygame.draw.rect(screen, GRAY, rect, border_radius=10)
-        emoji = ""
-        if name == "feed":
-            emoji = "🍴"
-        elif name == "play":
-            emoji = "🎮"
-        elif name == "sleep":
-            emoji = "🛏️"
-        elif name == "earn":
-            emoji = "💰"
-        elif name == "status":
-            emoji = "📊"
-
-        text = my_font.render(emoji + " " + name.capitalize(), True, BLACK)
+        pygame.draw.rect(screen, WHITE , rect, border_radius=10)
+        text = my_font.render(name.capitalize(), True, BLACK)
         text_rect = text.get_rect(center=rect.center)
         screen.blit(text, text_rect)
 
