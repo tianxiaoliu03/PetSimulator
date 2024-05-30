@@ -59,11 +59,9 @@ BAR_HEIGHT = 20
 
 # Define buttons and food/water rect
 buttons = {
-    "feed": pygame.Rect(650, 50, 100, 50),
     "play": pygame.Rect(650, 110, 100, 50),
     "sleep": pygame.Rect(650, 170, 100, 50),
     "earn": pygame.Rect(650, 230, 100, 50),
-    "status": pygame.Rect(650, 290, 100, 50)
 }
 
 # Load the food image with transparency
@@ -105,6 +103,12 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if intro_screen == True:
+            instructions == True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    if play_button.collidepoint(event.pos):
+                        intro_screen == False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
                 if food_rect.collidepoint(event.pos):
@@ -113,17 +117,13 @@ while run:
                     dragging_water = True
                 for name, rect in buttons.items():
                     if rect.collidepoint(event.pos):
-                        if name == "feed":
-                            pet.feed()
-                        elif name == "play":
+                        if name == "play":
                             pet.play()
                         elif name == "sleep":
                             pet.sleep()
                         elif name == "earn":
                             pet.earn_coins()
-                        elif name == "status":
-                            status_text = pet.check_status()
-                            show_status = True
+
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  # Left mouse button
                 if dragging_food:
@@ -158,7 +158,7 @@ while run:
         text_rect = text.get_rect(center=rect.center)
         screen.blit(text, text_rect)
 
-    # Draw health bars
+    # Draw health bars friday: finish all small homeworks sat: finish comp sci, do english sunday:
     draw_health_bar(screen, 10, 10, pet.hunger, "Hunger")
     draw_health_bar(screen, 10, 40, pet.sleepiness, "Sleepiness")
     draw_health_bar(screen, 10, 70, pet.happiness, "Happiness")
