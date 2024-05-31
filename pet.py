@@ -10,19 +10,19 @@ class Pet:
         self.coins = 0
         self.image_path = image_path
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (100, 100))  # Adjust size as needed
-        self.rect = self.image.get_rect(center=(400, 300))  # Center position
+        self.image = pygame.transform.scale(self.image, (200, 200))  # Adjust size as needed
+        self.rect = self.image.get_rect(center=(375, 540))  # Center position
 
     def feed(self):
         if self.coins >= 5:
-            self.hunger = max(self.hunger - 10, 0)
+            self.hunger = max(self.hunger + 10, 0)
             self.coins -= 5
         else:
             print("Not enough coins to buy food.")
 
     def quench_thirst(self):
         if self.coins >= 5:
-            self.thirstiness = max(self.thirstiness - 10, 0)
+            self.thirstiness = max(self.thirstiness + 10, 0)
             self.coins -= 5
         else:
             print("Not enough coins to buy water.")
@@ -38,10 +38,6 @@ class Pet:
             self.sleepiness += 10
         else:
             print(self.name + " is already well-rested.")
-
-    def check_status(self):
-        status_info = f"Name: {self.name}\nHappiness: {self.happiness}\nHunger: {self.hunger}\nSleepiness: {self.sleepiness}\nThirstiness: {self.thirstiness}\nCoins: {self.coins}"
-        return status_info
 
     def earn_coins(self):
         self.coins += 10

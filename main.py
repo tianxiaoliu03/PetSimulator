@@ -103,8 +103,6 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if intro_screen == True:
-            instructions == True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     if play_button.collidepoint(event.pos):
